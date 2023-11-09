@@ -5,8 +5,7 @@ import { Button, Input, Space, Typography, Checkbox } from "antd";
 import { DeleteFilled, EditFilled } from "@ant-design/icons";
 const { Title } = Typography;
 
-// Define types for the list items 
-type List = {
+type ListItem = {
   text: string;
   checked: boolean;
 };
@@ -17,35 +16,23 @@ type FormData = {
 
 const App: React.FC = () => {
   const { control, handleSubmit, reset, setValue } = useForm<FormData>();
-  const [listItem, setListItem] = useState<List[]>([]);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
+  const [listItem, setListItem] = useState<ListItem[]>([]);
 
-  // Add item after submission 
-  //editing, update the existing item
+  //data add
   const onSubmit: SubmitHandler<FormData> = (data: FormData) => {
-    if (editingIndex !== null) {
-      setListItem((prevList: List[]) =>
-        prevList.map((item: List, i: number) =>
-          i === editingIndex ? { ...item, text: data.listItem } : item
-        )
-      );
-      setEditingIndex(null);
-    } else {
-      setListItem([...listItem, { text: data.listItem, checked: false }]);
-    }
-// Reset the form after submission
+    setListItem([...listItem, { text: data.listItem, checked: false }]);
     reset();
   };
 
-  // delete Functionality
+  // data delete functionality
   const handleDelete = (index: number) => {
     setListItem((prevList) =>
       prevList.filter((item, i: number) => i !== index)
     );
   };
 
-  // checked item
+  // read  functionality
   const onChange = (index: number, e: any) => {
     setListItem((prevList) =>
       prevList.map((item, i) =>
@@ -54,11 +41,14 @@ const App: React.FC = () => {
     );
   };
 
-    // Handler to selected item for editing
+  //edit functionality
   const editTodo = (index: number) => {
+    //  const updateItem :any = index === index ?listItem[index].text : null ;
+    //  console.log(updateItem);
+    //   return updateItem;
+
     const itemToEdit: string = listItem[index].text;
     setValue("listItem", itemToEdit);
-    setEditingIndex(index);
   };
 
   return (
@@ -78,21 +68,17 @@ const App: React.FC = () => {
                 />
               )}
             />
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-            >
-              {editingIndex !== null ? "Update" : "Submit"}
+            <Button type="primary" htmlType="submit" size="large">
+              Submit
             </Button>
           </Space.Compact>
         </form>
         <div className="list">
-          {listItem.map((item: List, index) => (
+          {listItem.map((item: ListItem, index) => (
             <div key={index} className="innerList">
               <div className="text">
                 <Checkbox
-                  checked={item.checked}
+                  defaultChecked={false}
                   onChange={(e) => onChange(index, e)}
                 ></Checkbox>
                 <h3
